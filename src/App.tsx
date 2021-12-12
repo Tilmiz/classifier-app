@@ -1,13 +1,9 @@
 import React from 'react';
 import './App.css';
-import CodeBlock from './components/code-block';
+import HomePage from './components/HomePage';
 
 function App() {
-  return (
-    <div className="App">
-      <CodeBlock />
-    </div>
-  );
+  return (<HomePage />);
 }
 
 export default App;
