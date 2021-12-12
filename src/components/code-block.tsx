@@ -3,6 +3,7 @@ import * as ts from "typescript";
 import generator from "../source-codes/generate-data";
 //@ts-ignore
 import regression from 'regression';
+import { BinarySearchTree } from "../data-structs/BinarySearchTree";
 
 interface CodeBlockProps {
     dataType: "ARRAY" | "TREE" | "MATRIX",
@@ -14,6 +15,8 @@ const CodeBlock: FC<CodeBlockProps> = (props) => {
 
     const [inputCode, setInputCode] = useState("");
     const [isResultReady, setResultReady] = useState(false);
+
+
     const [results, setResults] = useState<{
         linear: any,
         exponential: any,
@@ -49,30 +52,47 @@ const CodeBlock: FC<CodeBlockProps> = (props) => {
 
     const evalFunction = (data: number[][]) => {
 
-        console.log(Date.now());
-
-        let arrayData: number[] = [];
+        console.log(Math.floor(Math.random() * (80 - 10 + 1)) + 10);        
 
         for (let index = 1; index < props.samplingSize; index++) {
 
-            let size = props.dataSize * index;
+            let arrayData: number[] = [];
+            let treeData: BinarySearchTree | null = null;
 
-            generateLinearData(arrayData, size);
+            let size = props.dataSize * index;
+            
+            switch(props.dataType){
+                case "ARRAY":
+                    generateArrayData(arrayData, size);
+                    break;
+                case "TREE":
+                    treeData = generateTreeData(size);
+                    console.log("Tree data", treeData);
+                    break;
+                case "MATRIX":
+                    break;
+            }
 
             let startTime = Date.now();
+            
+
+
             switch (props.dataType) {
                 case "ARRAY":
                     inputMethodArray(arrayData);
                     break;
                 case "TREE":
+                    inputMethodTree(treeData, size);
                     break;
                 case "MATRIX":
                     break;
             }
 
             let endTime = Date.now();
+            
 
             let timeElapsed = endTime - startTime;
+            //console.log("Timeelapsed:",timeElapsed)
 
             let dataPoint = [];
             dataPoint.push(index);
@@ -82,10 +102,50 @@ const CodeBlock: FC<CodeBlockProps> = (props) => {
         }
     }
 
-    const generateLinearData = (arrayData: number[], size: number) => {
+    const generateTreeData = (size: number) => {
+
+        let bst = new BinarySearchTree();
+
+        let rootValue = size / 2;
+        bst.insert(rootValue);
+
+        for (let index = 1; index < size; index++) {
+            
+            let newData = Math.floor(Math.random() * size) + 1;
+            bst.insert(newData);
+            
+        }
+
+        return bst;        
+    }
+
+    const generateArrayData = (arrayData: number[], size: number) => {
         for (let index = 0; index < size; index++) {
             arrayData.push(Math.random() * size);
         }
+    }
+
+    const inputMethodTree = (bst: BinarySearchTree | null, size: number) => {
+        //eval(inputCode);
+
+        console.log("Start time: ", Date.now());
+        let newData = Math.floor(Math.random() * size) + 1;
+
+        bst?.find(newData);
+
+        // let bigNumber = 100000;
+
+        // let current = bst?.root;
+        // while(current) {
+
+        //     console.log("here");
+        //     if(current.value > bigNumber){
+        //         bigNumber = current.value;
+        //     }
+        //     current = current.right;            
+        // }
+
+        console.log("End time: ", Date.now());
     }
 
     const inputMethodArray = (arrayData: number[]) => {
